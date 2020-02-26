@@ -611,15 +611,6 @@ const EditorWrapper = styled.div`
     width: 20em;
   }
 
-  .CodeMirror-dialog span.CodeMirror-search-label {
-    color: ${p => p.theme.colours.text};
-  }
-
-  .CodeMirror-dialog input.CodeMirror-search-field {
-    color: ${p => p.theme.colours.text};
-    background: ${p => p.theme.colours.background};
-  }
-
   .CodeMirror-dialog button {
     font-size: 70%;
   }
@@ -878,6 +869,10 @@ const GlobalStyle = createGlobalStyle`
     display: inline;
     margin-right: 0.5em;
   }
+  
+  .GpbOm{
+    overflow:hidden;
+  }
 `
 
 const Wrapper = ({ children }) => {
@@ -913,24 +908,12 @@ const GraphqlContainer = styled.div`
   width: 100%;
 `
 
-export class Container extends React.PureComponent {
-  private graphqlContainer
-
-  render() {
-    return (
-      <GraphqlContainer ref={this.setGraphqlContainer}>
-        {this.props.children}
-      </GraphqlContainer>
-    )
-  }
-
-  getWidth = () => {
-    return this.graphqlContainer.offsetWidth
-  }
-
-  private setGraphqlContainer = ref => {
-    this.graphqlContainer = ref
-  }
+interface Props {
+  setRef?: (ref: any) => void
 }
+
+export const Container: React.SFC<Props> = ({ children, setRef }) => (
+  <GraphqlContainer ref={setRef}>{children}</GraphqlContainer>
+)
 
 export default Wrapper
