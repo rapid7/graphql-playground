@@ -46,25 +46,27 @@ const Results: React.SFC<Props & ReduxProps> = ({ setRef, responses }) => {
         </Response>
       ) : (
         responses.map(response => (
-          <Response
-            key={response.resultID || String(response.time)}
-            isSubscription={isSubscription}
-          >
-            {responses.size > 1 &&
-              response.time && (
-                <SubscriptionTime>
-                  <SubscriptionTimeText>
-                    {ageOfDate(response.time)}
-                  </SubscriptionTimeText>
-                </SubscriptionTime>
-              )}
-            <ResultWrapper isSubscription={responses.size > 1}>
-              <ResultViewer
-                value={response.date}
-                isSubscription={isSubscription}
-              />
-            </ResultWrapper>
-          </Response>
+          <ScrollBar>
+            <Response
+              key={response.resultID || String(response.time)}
+              isSubscription={isSubscription}
+            >
+              {responses.size > 1 &&
+                response.time && (
+                  <SubscriptionTime>
+                    <SubscriptionTimeText>
+                      {ageOfDate(response.time)}
+                    </SubscriptionTimeText>
+                  </SubscriptionTime>
+                )}
+              <ResultWrapper isSubscription={responses.size > 1}>
+                <ResultViewer
+                  value={response.date}
+                  isSubscription={isSubscription}
+                />
+              </ResultWrapper>
+            </Response>
+          </ScrollBar>
         ))
       )}
     </ResultWindow>
@@ -78,11 +80,11 @@ const mapStateToProps = createStructuredSelector({
 export default connect(mapStateToProps)(Results)
 
 const ResultWindow = styled<ResultWrapperProps, 'div'>('div')`
-  flex: 1;
-  height: auto;
   position: relative;
-  overflow: ${props => (props.isSubscription ? 'auto' : 'visible')};
-  max-height: none !important;
+
+  overflow: scroll;
+  padding-right: 30px;
+  height: 100vh;
 
   .cm-string {
     color: rgb(41, 185, 115);
@@ -144,6 +146,16 @@ const SubscriptionTimeText = styled.div`
   font-size: 12px;
   color: ${p => p.theme.editorColours.subscriptionTimeText};
   padding-left: 15px;
+`
+
+const ScrollBar = styled.div`
+  position: relative;
+  min-height: 200px;
+  .CodeMirror-scroll {
+    overflow: auto !important;
+    max-width: 50vw;
+    margin-right: 5px;
+  }
 `
 
 interface ResultWrapperProps {
