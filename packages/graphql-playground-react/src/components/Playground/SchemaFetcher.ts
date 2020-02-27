@@ -6,16 +6,16 @@ import { makeOperation } from './util/makeOperation'
 import { parseHeaders } from './util/parseHeaders'
 import { LinkCreatorProps } from '../../state/sessions/fetchingSagas'
 import * as LRU from 'lru-cache'
-import { log } from '../../utils/performance'
-
-export interface TracingSchemaTuple {
-  schema: GraphQLSchema
-  tracingSupported: boolean
-}
 
 export interface CsrfHeader {
   name: string
   value: string
+}
+
+export interface TracingSchemaTuple {
+  schema: GraphQLSchema
+  tracingSupported: boolean
+  isQueryPlanSupported: boolean
 }
 
 export interface SchemaFetchProps {
@@ -80,6 +80,7 @@ export class SchemaFetcher {
     if (fetching) {
       return fetching
     }
+
     const promise = this.fetchSchema(session)
     this.fetching = this.fetching.set(hash, promise)
     return promise
@@ -115,6 +116,9 @@ export class SchemaFetcher {
     const headers = {
       ...parseHeaders(session.headers),
       'X-Apollo-Tracing': '1',
+      // Breaking the X- header pattern here since it's dated, and not
+      // recommended: https://www.mnot.net/blog/2009/02/18/x-
+      'Apollo-Query-Plan-Experimental': '1',
     }
     if (csrf) {
       headers[csrf.name] = csrf.value
@@ -145,9 +149,15 @@ export class SchemaFetcher {
           const tracingSupported =
             (schemaData.extensions && Boolean(schemaData.extensions.tracing)) ||
             false
+
+          const isQueryPlanSupported =
+            (schemaData.extensions &&
+              Boolean(schemaData.extensions.__queryPlanExperimental)) ||
+            false
           const result: TracingSchemaTuple = {
             schema,
             tracingSupported,
+            isQueryPlanSupported,
           }
           this.sessionCache.set(this.hash(session), result)
           resolve(result)
@@ -159,9 +169,7 @@ export class SchemaFetcher {
         },
         error: err => {
           reject(err)
-          log(err)
           this.fetching = this.fetching.remove(this.hash(session))
-          location.reload()
         },
       })
     })
