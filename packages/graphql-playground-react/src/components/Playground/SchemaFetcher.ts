@@ -7,6 +7,11 @@ import { parseHeaders } from './util/parseHeaders'
 import { LinkCreatorProps } from '../../state/sessions/fetchingSagas'
 import * as LRU from 'lru-cache'
 
+export interface CsrfHeader {
+  name: string
+  value: string
+}
+
 export interface TracingSchemaTuple {
   schema: GraphQLSchema
   tracingSupported: boolean
@@ -16,6 +21,7 @@ export interface TracingSchemaTuple {
 export interface SchemaFetchProps {
   endpoint: string
   headers?: string
+  csrf?: CsrfHeader
 }
 
 export type LinkGetter = (session: LinkCreatorProps) => { link: ApolloLink }
@@ -106,13 +112,16 @@ export class SchemaFetcher {
     session: SchemaFetchProps,
   ): Promise<{ schema: GraphQLSchema; tracingSupported: boolean } | null> {
     const hash = this.hash(session)
-    const { endpoint } = session
+    const { endpoint, csrf } = session
     const headers = {
       ...parseHeaders(session.headers),
       'X-Apollo-Tracing': '1',
       // Breaking the X- header pattern here since it's dated, and not
       // recommended: https://www.mnot.net/blog/2009/02/18/x-
       'Apollo-Query-Plan-Experimental': '1',
+    }
+    if (csrf) {
+      headers[csrf.name] = csrf.value
     }
 
     const options = set(session, 'headers', headers) as any
