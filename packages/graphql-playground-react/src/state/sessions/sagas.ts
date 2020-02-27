@@ -135,6 +135,7 @@ function* getSessionWithCredentials() {
     endpoint: session.endpoint,
     headers: session.headers,
     credentials: settings['request.credentials'],
+    csrf: settings['csrf.header'],
   }
 }
 
