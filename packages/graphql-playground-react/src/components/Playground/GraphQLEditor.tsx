@@ -686,6 +686,7 @@ const EditorBar = styled.div`
   display: flex;
   flex-direction: row;
   flex: 1;
+  overflow: hidden;
 `
 
 const ResultWrap = styled.div`
