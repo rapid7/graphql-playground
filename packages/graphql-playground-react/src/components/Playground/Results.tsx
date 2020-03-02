@@ -78,11 +78,11 @@ const mapStateToProps = createStructuredSelector({
 export default connect(mapStateToProps)(Results)
 
 const ResultWindow = styled<ResultWrapperProps, 'div'>('div')`
-  flex: 1;
-  height: auto;
   position: relative;
-  overflow: ${props => (props.isSubscription ? 'auto' : 'visible')};
-  max-height: none !important;
+
+  overflow: scroll;
+  padding-right: 30px;
+  height: 100vh;
 
   .cm-string {
     color: rgb(41, 185, 115);
