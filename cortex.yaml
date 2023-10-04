@@ -1,0 +1,16 @@
+---
+info:
+  title: Graphql Playground
+  description: "\U0001F3AE  GraphQL IDE for better development workflows (GraphQL
+    Subscriptions, interactive docs & collaboration)"
+  x-cortex-git:
+    github:
+      alias: r7org
+      repository: rapid7/graphql-playground
+  x-cortex-tag: graphql-playground
+  x-cortex-type: service
+  x-cortex-domain-parents:
+  - tag: platform-data
+openapi: 3.0.1
+servers:
+- url: "/"
